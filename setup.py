@@ -17,4 +17,5 @@ setup(
     install_requires=['numpy'],
     author='Magdalena Krzuś, Konrad Jałowiecki',
     author_email='magdalena.krzus@gmail.com',
-    packages=find_packages(exclude=['tests']))
+    packages=find_packages(exclude=['tests']),
+    inlude_package_data=True)
