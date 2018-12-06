@@ -1,0 +1,41 @@
+cif : COMMENTS? WHITESPACE? ( datablock ( WHITESPACE datablock )* WHITESPACE? )?
+datablock : datablockheading ( WHITESPACE ( dataitems | saveframe ) )*
+datablockheading : DATA_ NONBLANKCHAR+
+saveframe : saveframeheading ( WHITESPACE dataitems)+ WHITESPACE SAVE
+saveframeheading : SAVE ( NONBLANKCHAR )+
+dataitems : (TAG WHITESPACE value) | (loopheader loopbody)
+loopheader : LOOP ( WHITESPACE TAG )+
+loopbody : value ( WHITESPACE value )*
+DATA_ : ("D" | "d") ("A" | "a") ("T" | "t") ("A" | "a") "_"
+LOOP :("L" | "l") ("O" | "o") ("O" | "o") ("P" | "p") "_"
+GLOBAL : ("G" | "g") ("L" | "l") ("O" | "o") ("B" | "b") ("A" | "a") ("L" | "l") "_"
+SAVE : ("S" | "s") ("A" | "a") ("V" | "v") ("E" | "e") "_"
+STOP : ("S" | "s") ("T" | "t") ("O" | "o") ("P" | "p")"_"
+TAG : "_" NONBLANKCHAR+
+value : "." | "?" | NUMERIC | charstring | textfield 
+NUMERIC : ( NUMBER | NUMBER "(" UNSIGNEDINTEGER ")" )
+NUMBER : ( INTEGER | FLOAT )
+INTEGER : ( "+" | "-" )? UNSIGNEDINTEGER
+FLOAT : ( INTEGER EXPONENT | ( ( "+" | "-" )? ( ( DIGIT )* "\." UNSIGNEDINTEGER ) | ( DIGIT )+ "\." ) ) ( EXPONENT )?
+EXPONENT : ( ( "e" | "E" ) | ( "e" | "E" ) ( "+" | "- " ) ) UNSIGNEDINTEGER
+UNSIGNEDINTEGER : DIGIT+
+charstring : UNQUOTEDSTRING | SINGLEQUOTEDSTRING | DOUBLEQUOTEDSTRING
+EOLUNQUOTEDSTRING : NEWLINE ORDINARYCHAR ( NONBLANKCHAR )*
+NOTEOLUNQUOTEDSTRING : NOTNEWLINE ( ORDINARYCHAR | ";" )* ( NONBLANKCHAR )*
+UNQUOTEDSTRING : EOLUNQUOTEDSTRING | NOTEOLUNQUOTEDSTRING
+SINGLEQUOTEDSTRING : "'" ANYPRINTCHAR* "'" 
+DOUBLEQUOTEDSTRING : "\"" ANYPRINTCHAR* "\"" 
+textfield : semicolontextfield
+semicolontextfield : ";" ( ( ANYPRINTCHAR )* NEWLINE ( ( TEXTLEADCHAR ( ANYPRINTCHAR )* )? NEWLINE )* ) ";"
+WHITESPACE : (" " | "\t" | NEWLINE | TOKENIZEDCOMMENTS)+
+COMMENTS : ("#" ANYPRINTCHAR* NEWLINE)+
+TOKENIZEDCOMMENTS : ( " " | "\t" | NEWLINE)+ COMMENTS
+ORDINARYCHAR : LETTER | DIGIT | "!" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | "<" | "=" | ">" | "?" | "@" | "\\" | "\^" | "`"  | "{" | "|" | "}" | "~"
+NONBLANKCHAR : ORDINARYCHAR | "\"" | "#" | "$" | "'" | "_" |";" | "^" | "[" | "]"
+TEXTLEADCHAR : ORDINARYCHAR | "\"" | "#" | "$" | "'" | "_" | " " | "\t" | "[" | "]"
+ANYPRINTCHAR : ORDINARYCHAR | "\"" | "#" | "$" | "'" | "_" | " " | "^" | "\t" | ";" | "[" | "]"
+NOTNEWLINE : /[^\r\n\f]/
+%import common.LETTER
+%import common.NEWLINE
+%import common.DIGIT
+%ignore COMMENTS
