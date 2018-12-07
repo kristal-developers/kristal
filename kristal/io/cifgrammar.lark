@@ -16,8 +16,8 @@ value : "." | "?" | NUMERIC | charstring | textfield
 NUMERIC : ( NUMBER | NUMBER "(" UNSIGNEDINTEGER ")" )
 NUMBER : ( INTEGER | FLOAT )
 INTEGER : ( "+" | "-" )? UNSIGNEDINTEGER
-FLOAT : ( INTEGER EXPONENT | ( ( "+" | "-" )? ( ( DIGIT )* "\." UNSIGNEDINTEGER ) | ( DIGIT )+ "\." ) ) ( EXPONENT )?
-EXPONENT : ( ( "e" | "E" ) | ( "e" | "E" ) ( "+" | "- " ) ) UNSIGNEDINTEGER
+FLOAT : ( INTEGER EXPONENT ) | ( ( "+" | "-" )? ( DIGIT * "." UNSIGNEDINTEGER ) | ( DIGIT + "." ) EXPONENT? )
+EXPONENT : ( ( "e" | "E" ) | ( "e" | "E" ) ( "+" | "-" ) ) UNSIGNEDINTEGER
 UNSIGNEDINTEGER : DIGIT+
 charstring : UNQUOTEDSTRING | SINGLEQUOTEDSTRING | DOUBLEQUOTEDSTRING
 EOLUNQUOTEDSTRING : NEWLINE ORDINARYCHAR ( NONBLANKCHAR )*
