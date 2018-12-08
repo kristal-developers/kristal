@@ -1,11 +1,11 @@
-cif : COMMENTS? WHITESPACE? ( datablock ( WHITESPACE datablock )* WHITESPACE? )?
-datablock : datablockheading ( WHITESPACE ( dataitems | saveframe ) )*
+cif : COMMENTS? _WHITESPACE? ( datablock ( _WHITESPACE datablock )* _WHITESPACE? )?
+datablock : datablockheading ( _WHITESPACE ( dataitems | saveframe ) )*
 datablockheading : DATA_ NONBLANKCHAR+
-saveframe : saveframeheading ( WHITESPACE dataitems)+ WHITESPACE SAVE
+saveframe : saveframeheading ( _WHITESPACE dataitems)+ _WHITESPACE SAVE
 saveframeheading : SAVE ( NONBLANKCHAR )+
-dataitems : (TAG WHITESPACE value) | (loopheader loopbody)
-loopheader : LOOP ( WHITESPACE TAG )+
-loopbody : value ( WHITESPACE value )*
+dataitems : (TAG _WHITESPACE value) | (loopheader loopbody)
+loopheader : LOOP ( _WHITESPACE TAG )+
+loopbody : value ( _WHITESPACE value )*
 DATA_ : ("D" | "d") ("A" | "a") ("T" | "t") ("A" | "a") "_"
 LOOP :("L" | "l") ("O" | "o") ("O" | "o") ("P" | "p") "_"
 GLOBAL : ("G" | "g") ("L" | "l") ("O" | "o") ("B" | "b") ("A" | "a") ("L" | "l") "_"
@@ -20,14 +20,14 @@ FLOAT : ( INTEGER EXPONENT ) | ( ( "+" | "-" )? ( DIGIT * "." UNSIGNEDINTEGER ) 
 EXPONENT : ( ( "e" | "E" ) | ( "e" | "E" ) ( "+" | "-" ) ) UNSIGNEDINTEGER
 UNSIGNEDINTEGER : DIGIT+
 charstring : UNQUOTEDSTRING | SINGLEQUOTEDSTRING | DOUBLEQUOTEDSTRING
-EOLUNQUOTEDSTRING : NEWLINE ORDINARYCHAR ( NONBLANKCHAR )*
+EOLUNQUOTEDSTRING : _NEWLINE ORDINARYCHAR ( NONBLANKCHAR )*
 NOTEOLUNQUOTEDSTRING : NOTNEWLINE ( ORDINARYCHAR | ";" )* ( NONBLANKCHAR )*
 UNQUOTEDSTRING : EOLUNQUOTEDSTRING | NOTEOLUNQUOTEDSTRING
 SINGLEQUOTEDSTRING : "'" ANYPRINTCHAR* "'" 
 DOUBLEQUOTEDSTRING : "\"" ANYPRINTCHAR* "\"" 
 textfield : semicolontextfield
 semicolontextfield : ";" ( ( ANYPRINTCHAR )* NEWLINE ( ( TEXTLEADCHAR ( ANYPRINTCHAR )* )? NEWLINE )* ) ";"
-WHITESPACE : (" " | "\t" | NEWLINE | TOKENIZEDCOMMENTS)+
+_WHITESPACE : (" " | "\t" | NEWLINE | TOKENIZEDCOMMENTS)+
 COMMENTS : ("#" ANYPRINTCHAR* NEWLINE)+
 TOKENIZEDCOMMENTS : ( " " | "\t" | NEWLINE)+ COMMENTS
 ORDINARYCHAR : LETTER | DIGIT | "!" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | "<" | "=" | ">" | "?" | "@" | "\\" | "\^" | "`"  | "{" | "|" | "}" | "~"
