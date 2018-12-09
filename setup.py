@@ -18,4 +18,7 @@ setup(
     author='Magdalena Krzuś, Konrad Jałowiecki',
     author_email='magdalena.krzus@gmail.com',
     packages=find_packages(exclude=['tests']),
+    package_data = {
+        'kristal': ['io/cifgrammar.lark']
+    },
     inlude_package_data=True)

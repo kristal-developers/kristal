@@ -1,41 +1,43 @@
-cif : COMMENTS? _WHITESPACE? ( datablock ( _WHITESPACE datablock )* _WHITESPACE? )?
-datablock : datablockheading ( _WHITESPACE ( dataitems | saveframe ) )*
-datablockheading : DATA_ NONBLANKCHAR+
-saveframe : saveframeheading ( _WHITESPACE dataitems)+ _WHITESPACE SAVE
-saveframeheading : SAVE ( NONBLANKCHAR )+
-dataitems : (TAG _WHITESPACE value) | (loopheader loopbody)
-loopheader : LOOP ( _WHITESPACE TAG )+
-loopbody : value ( _WHITESPACE value )*
-DATA_ : ("D" | "d") ("A" | "a") ("T" | "t") ("A" | "a") "_"
-LOOP :("L" | "l") ("O" | "o") ("O" | "o") ("P" | "p") "_"
-GLOBAL : ("G" | "g") ("L" | "l") ("O" | "o") ("B" | "b") ("A" | "a") ("L" | "l") "_"
-SAVE : ("S" | "s") ("A" | "a") ("V" | "v") ("E" | "e") "_"
-STOP : ("S" | "s") ("T" | "t") ("O" | "o") ("P" | "p")"_"
-TAG : "_" NONBLANKCHAR+
-value : "." | "?" | NUMERIC | charstring | textfield 
-NUMERIC : ( NUMBER | NUMBER "(" UNSIGNEDINTEGER ")" )
-NUMBER : ( INTEGER | FLOAT )
+cif : _NEWLINE* datablock*
+datablock : datablock_heading (loop | entry) + 
+datablock_heading : "data_"i NON_BLANK_STRING _NEWLINE
+loop : loop_header loop_body
+loop_header : "loop_" _NEWLINE (tag _NEWLINE)+
+loop_body : (_value _WS)+
+tag : "_" NON_BLANK_STRING
+_value : integer | float | string
+entry : tag _WS _value _NEWLINE
+integer.3 : INTEGER
+float.2 : FLOAT
+string : _unquoted_string | _multiline_string | _quoted_string
+_unquoted_string.1 : UNQUOTED_STRING
+_multiline_string : ";"  MULTILINE_STRING ";"
+_quoted_string : single_quoted_string | double_quoted_string
+single_quoted_string : "'" SINGLE_QUOTED_STRING_INNER "'"
+double_quoted_string : "\"" DOUBLE_QUOTED_STRING_INNER"\""
+UNQUOTED_STRING : LEAD_CHAR NON_BLANK_CHAR*
+DOUBLE_QUOTED_STRING_INNER : (NON_BLANK_NON_QUOTE_CHAR | "'" | /\"[^ \r\n\t]/ | " " | "\t")+ 
+SINGLE_QUOTED_STRING_INNER : (NON_BLANK_NON_QUOTE_CHAR | "\"" | /'[^ \r\n\t]/ | " " | "\t")+
+MULTILINE_STRING : (NEWLINE | (PRINTABLE_STRING NEWLINE))(LEAD_CHAR PRINTABLE_STRING NEWLINE)*
+PRINTABLE_CHAR : NON_BLANK_CHAR | " " | "\t"
+NON_BLANK_CHAR : NON_BLANK_NON_QUOTE_CHAR | "\"" | "'"
+NON_BLANK_NON_QUOTE_CHAR : ORDINARY_CHAR | "#" | "$" | "_" |";" | "^" | "[" | "]"
+ORDINARY_CHAR : LETTER | DIGIT | "!" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | "<" | "=" | ">" | "?" | "@" | "\\" | "\^" | "`"  | "{" | "|" | "}" | "~"
+PRINTABLE_STRING : PRINTABLE_CHAR+
+NON_BLANK_STRING : NON_BLANK_CHAR+
+LEAD_CHAR : ORDINARY_CHAR | "\"" | "#" | "$" | "'" | " " | "\t" | "[" | "]"
+BASE_STRING : ORDINARY_CHAR+
+FLOAT : ( INTEGER EXPONENT ) | ( ( "+" | "-" )? (( DIGIT* "." UNSIGNEDINTEGER ) | ( DIGIT+ "." )) EXPONENT? )
+EXPONENT : ("e"| "E") ( "+" | "-" )? UNSIGNEDINTEGER
 INTEGER : ( "+" | "-" )? UNSIGNEDINTEGER
-FLOAT : ( INTEGER EXPONENT ) | ( ( "+" | "-" )? ( DIGIT * "." UNSIGNEDINTEGER ) | ( DIGIT + "." ) EXPONENT? )
-EXPONENT : ( ( "e" | "E" ) | ( "e" | "E" ) ( "+" | "-" ) ) UNSIGNEDINTEGER
 UNSIGNEDINTEGER : DIGIT+
-charstring : UNQUOTEDSTRING | SINGLEQUOTEDSTRING | DOUBLEQUOTEDSTRING
-EOLUNQUOTEDSTRING : _NEWLINE ORDINARYCHAR ( NONBLANKCHAR )*
-NOTEOLUNQUOTEDSTRING : NOTNEWLINE ( ORDINARYCHAR | ";" )* ( NONBLANKCHAR )*
-UNQUOTEDSTRING : EOLUNQUOTEDSTRING | NOTEOLUNQUOTEDSTRING
-SINGLEQUOTEDSTRING : "'" ANYPRINTCHAR* "'" 
-DOUBLEQUOTEDSTRING : "\"" ANYPRINTCHAR* "\"" 
-textfield : semicolontextfield
-semicolontextfield : ";" ( ( ANYPRINTCHAR )* NEWLINE ( ( TEXTLEADCHAR ( ANYPRINTCHAR )* )? NEWLINE )* ) ";"
-_WHITESPACE : (" " | "\t" | NEWLINE | TOKENIZEDCOMMENTS)+
-COMMENTS : ("#" ANYPRINTCHAR* NEWLINE)+
-TOKENIZEDCOMMENTS : ( " " | "\t" | NEWLINE)+ COMMENTS
-ORDINARYCHAR : LETTER | DIGIT | "!" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | "<" | "=" | ">" | "?" | "@" | "\\" | "\^" | "`"  | "{" | "|" | "}" | "~"
-NONBLANKCHAR : ORDINARYCHAR | "\"" | "#" | "$" | "'" | "_" |";" | "^" | "[" | "]"
-TEXTLEADCHAR : ORDINARYCHAR | "\"" | "#" | "$" | "'" | "_" | " " | "\t" | "[" | "]"
-ANYPRINTCHAR : ORDINARYCHAR | "\"" | "#" | "$" | "'" | "_" | " " | "^" | "\t" | ";" | "[" | "]"
-NOTNEWLINE : /[^\r\n\f]/
+
+COMMENT: /#[^\r\n]*/
+NEWLINE: ( /\r?\n[\t ]*/ | COMMENT )+
+_NEWLINE: ( /\r?\n[\t ]*/ | COMMENT )+
+_WS : WS
+WS : (" " | "\t" | _NEWLINE )+
+NAME: /[a-zA-Z_]\w*/
 %import common.LETTER
-%import common.NEWLINE
 %import common.DIGIT
-%ignore COMMENTS
+%ignore COMMENT
