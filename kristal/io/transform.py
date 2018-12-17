@@ -31,9 +31,11 @@ class CIFTransformer(lark.Transformer):
         return DataBlock(name, loops, entries)
 
     def datablock_heading(self, matches):
+        """Transform datablock heading."""
         return str(matches[0])
 
     def loop(self, matches):
+        """Transform loop into pandas.DataFrame."""
         columns = matches[0].children
         if (len(matches[1].children)) % len(columns):
             raise ValueError('Invalid number of items in loop {}'.format(columns))
@@ -42,13 +44,17 @@ class CIFTransformer(lark.Transformer):
         return lark.Tree('loop', [loop_df])
 
     def integer(self, matches):
+        """Transform integer."""
         return int(matches[0])
 
     def float(self, matches):
+        """Transform float."""
         return float(matches[0])
 
     def string(self, matches):
+        """Transform string."""
         return str(matches[0])
 
     def tag(self, matches):
+        """Transform tag."""
         return str(matches[0])
