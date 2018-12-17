@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/kristal-developers/kristal.svg?branch=master
+   :target: https://travis-ci.org/kristal-developers/kristal
+
 Kristal
 ########################################
 
