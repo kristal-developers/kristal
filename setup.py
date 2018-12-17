@@ -14,7 +14,7 @@ setup(
     license='MIT',
     description=__doc__,
     long_description=LONG_DESCRIPTION,
-    install_requires=['numpy', 'lark-parser'],
+    install_requires=['numpy', 'pandas', 'lark-parser'],
     author='Magdalena Krzuś, Konrad Jałowiecki',
     author_email='magdalena.krzus@gmail.com',
     packages=find_packages(exclude=['tests']),
