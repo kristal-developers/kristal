@@ -6,20 +6,19 @@ from kristal.io import read_cif, GRAMMAR
 from kristal.io.transform import CIFTransformer
 
 @pytest.fixture(name='transformer', scope='session')
-def transformer_factory():
+def create_transformer():
+    """Create default transformer for use with tests."""
     return CIFTransformer()
 
 @pytest.fixture(name='lark')
 def patch_lark(mocker):
+    """Replace lark module in kristal.io with mock object."""
     return mocker.patch('kristal.io.lark')
 
-@pytest.fixture(name='mock_transformer')
-def create_mock_transformer(mocker):
-    return mocker.Mock()
-
 @pytest.fixture(name='mock_open')
-def create_mock_open(mocker):
-    return mocker.patch('kristal.io.open', mocker.mock_open())
+def patch_mock_open(mocker):
+    """Replace open function in kristal.io module."""
+    return mocker.patch('kristal.io.open', mocker.mock_open(read_data='test_content'))
 
 def test_string_transform(transformer):
     """CIFTransformer should correctly transform string terminals."""
@@ -36,6 +35,7 @@ def test_float_transform(transformer, float_str, expected):
     assert transformer.float([Token('FLOAT', float_str)]) == expected
 
 def test_loop_transform_correct_input(transformer):
+    """CIFTransformer.loop should transform correct loop into DataFrame."""
     header_tree = Tree('loop_header', ['x', 'y', 'label'])
     body_tree = Tree('loop_body', [1.2, 2.0, 'a', -3.1, -2.8, 'b'])
     expected_df = pd.DataFrame(
@@ -46,6 +46,11 @@ def test_loop_transform_correct_input(transformer):
     assert actual_tree.children[0].equals(expected_df)
 
 def test_loop_raises_on_incorrect_input(transformer):
+    """CIFTransformer.loop functoin should raise ValueError on incorrect input.
+
+    Criterion for the input to be invalid is that number of elements in
+    loop_body is not divisible by number of elements in header.
+    """
     header_tree = Tree('loop_header', ['a', 'b', 'c'])
     body_tree = Tree('loop_body', [1, 5, 5, 6, 2])
 
@@ -54,7 +59,28 @@ def test_loop_raises_on_incorrect_input(transformer):
 
     assert 'Invalid number of items in loop' in str(exc_info.value)
 
-def test_read_cif_uses_lark(lark, mock_transformer, mock_open):
-    """Lark instance should be created with correct parameters."""
-    read_cif('BENZEN01.cif', transformer=mock_transformer)
+@pytest.mark.usefixtures('mock_open')
+def test_read_cif_uses_lark(lark, mocker):
+    """The read_cif function should correctly create Lark instance."""
+    read_cif('BENZEN01.cif', transformer=mocker.Mock())
     lark.Lark.assert_called_once_with(GRAMMAR, parser='earley', start='cif')
+
+@pytest.mark.usefixtures('lark')
+def test_read_cif_opens_file(mocker, mock_open):
+    """The read_cif function should open file passed as parameter."""
+    read_cif('BENZEN01.cif', transformer=mocker.Mock())
+    mock_open.assert_called_once_with('BENZEN01.cif')
+
+@pytest.mark.usefixtures('mock_open')
+def test_read_cif_parses_content(lark, mocker):
+    """The read_cif function use Lark to parse content read from input file."""
+    read_cif('BENZEN01.cif', transformer=mocker.Mock())
+    lark.Lark().parse.assert_called_once_with('test_content')
+
+@pytest.mark.usefixtures('mock_open')
+def test_read_cif_returns_transformed_tree(lark, mocker):
+    """The read_cif function should return transformed tree."""
+    transformer = mocker.Mock()
+    result = read_cif('BENZEN01.cif', transformer=transformer)
+    transformer.transform.assert_called_once_with(lark.Lark().parse())
+    assert result == transformer.transform()
