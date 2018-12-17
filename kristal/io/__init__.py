@@ -3,7 +3,8 @@ from pkg_resources import resource_filename
 import lark
 from kristal.io.transform import CIFTransformer
 
-GRAMMAR_PATH = 'io/cifgrammar.lark'
+with open(resource_filename('kristal', 'io/cifgrammar.lark')) as grammar_file:
+    GRAMMAR = grammar_file.read()
 
 def read_cif(cif_path, transformer=None):
     """Read content of given CIF file.
@@ -28,12 +29,9 @@ def read_cif(cif_path, transformer=None):
     if transformer is None:
         transformer = CIFTransformer()
 
-    with open(resource_filename('kristal', GRAMMAR_PATH)) as grammar_file:
-        grammar = grammar_file.read()
-
     with open(cif_path) as cif:
         content = cif.read()
 
-    parser = lark.Lark(grammar, parser='earley', start='cif')
+    parser = lark.Lark(GRAMMAR, parser='earley', start='cif')
     tree = parser.parse(content)
     return transformer.transform(tree)
