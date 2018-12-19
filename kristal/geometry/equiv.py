@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Dec 19 12:44:19 2018
-
-@author: magdalenakrzus
-"""
 import numpy as np
 from numpy import sin, cos
 
 def cos2(x):
+    """Shortcut for computing `np.cos(x) ** 2`."""
     return cos(x) ** 2
 
 def sin2(x):
+    """Shortcut for computing `np.sin(x) ** 2`."""    
     return sin(x) ** 2
 
 class SkewCoordinateSystem(object):
