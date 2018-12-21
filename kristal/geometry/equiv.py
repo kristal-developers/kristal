@@ -11,7 +11,7 @@ def sin2(x):
     """Shortcut for computing :code:`np.sin(x) ** 2`."""
     return sin(x) ** 2
 
-class SkewCoordinateSystem(object):
+class FractionalCoordinateSystem(object):
     """Class representing fractional coordinates system.
 
     :ivar a: length of first periodic vector.
