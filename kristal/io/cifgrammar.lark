@@ -5,9 +5,9 @@ loop : loop_header loop_body
 loop_header : "loop_" _NEWLINE (tag _NEWLINE)+
 loop_body : (_value _WS)+
 tag : "_" NON_BLANK_STRING
-_value : number | string
+_value : _number | string
 entry : tag _WS _value _NEWLINE
-number : ( integer | float) _UNCERTAINITY?
+_number : ( integer | float) _UNCERTAINITY?
 integer.3 : INTEGER
 float.2 : FLOAT
 string : _unquoted_string | _multiline_string | _quoted_string
