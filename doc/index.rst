@@ -13,7 +13,8 @@ Kristal is an user friendly package for matching crystallographic structures.
    :maxdepth: 2
 
    userdocs/installation
-   
+   notebooks/reading-cif-files.ipynb
+
 .. toctree::
    :caption: Technical reference
    :maxdepth: 4
