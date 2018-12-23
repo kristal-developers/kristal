@@ -25,6 +25,28 @@ def test_string_transform(transformer):
     assert transformer.string([Token('NON_BLANK_STRING', 'Bozon')]) == 'Bozon'
 
 @pytest.mark.parametrize(
+    'original,expected',
+    [["'Benzen'", 'Benzen'],
+     ["'Benzen''", "Benzen'"],
+     ["''Benzen'", "'Benzen"],
+     ["'Test'test'", "Test'test"]])
+def test_single_quoted_string_transform(original, expected, transformer):
+    """CIFTransformer should correctly strip single quoted strings."""
+    token = Token('SINGLE_QUOTED_STRING_INNER', original)
+    assert transformer.single_quoted_string([token]) == expected
+
+@pytest.mark.parametrize(
+    'original,expected',
+    [['"Benzen"', 'Benzen'],
+     ['"Benzen""', 'Benzen"'],
+     ['""Benzen"', '"Benzen'],
+     ['"Test"test"', 'Test"test']])
+def test_double_quoted_string_transform(original, expected, transformer):
+    """CIFTransformer should correctly strip double quoted strings."""
+    token = Token('DOUBLE_QUOTED_STRING_INNER', original)
+    assert transformer.double_quoted_string([token]) == expected
+
+@pytest.mark.parametrize(
     'float_str,expected',
     [['21.37', 21.37],
      ['2.1e-2', 0.021],
