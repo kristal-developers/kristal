@@ -55,6 +55,14 @@ class CIFTransformer(lark.Transformer):
         """Transform string."""
         return str(matches[0])
 
+    def single_quoted_string(self, matches):
+        """Transform single quoted string."""
+        return matches[0][1:-1]
+
+    def double_quoted_string(self, matches):
+        """Transform double quoted string."""
+        return matches[0][1:-1]
+
     def tag(self, matches):
         """Transform tag."""
         return str(matches[0])
