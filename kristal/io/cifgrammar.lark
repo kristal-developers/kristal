@@ -5,8 +5,9 @@ loop : loop_header loop_body
 loop_header : "loop_" _NEWLINE (tag _NEWLINE)+
 loop_body : (_value _WS)+
 tag : "_" NON_BLANK_STRING
-_value : integer | float | string
+_value : _number | string
 entry : tag _WS _value _NEWLINE
+_number : ( integer | float) _UNCERTAINITY?
 integer.3 : INTEGER
 float.2 : FLOAT
 string : _unquoted_string | _multiline_string | _quoted_string
@@ -30,6 +31,7 @@ BASE_STRING : ORDINARY_CHAR+
 FLOAT : ( INTEGER EXPONENT ) | ( ( "+" | "-" )? (( DIGIT* "." UNSIGNEDINTEGER ) | ( DIGIT+ "." )) EXPONENT? )
 EXPONENT : ("e"| "E") ( "+" | "-" )? UNSIGNEDINTEGER
 INTEGER : ( "+" | "-" )? UNSIGNEDINTEGER
+_UNCERTAINITY : "(" UNSIGNEDINTEGER ")"
 UNSIGNEDINTEGER : DIGIT+
 
 COMMENT: /#[^\r\n]*/
